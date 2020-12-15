@@ -1,0 +1,6 @@
+[submodule "VeniceRCON-backend"]
+	path = VeniceRCON-backend
+	url = https://github.com/alliance-apps/VeniceRCON-backend
+[submodule "VeniceRCON-UI"]
+	path = VeniceRCON-UI
+	url = https://github.com/alliance-apps/VeniceRCON-UI
