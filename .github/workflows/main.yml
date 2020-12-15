@@ -102,6 +102,7 @@ jobs:
       - name: pack project
         run: |
           tar -czvf venicercon-node-${{ matrix.node-version }}-${{ github.event.inputs.version }}.tar.gz venicercon-${{ github.event.inputs.version }}
+          cp venicercon-node-${{ matrix.node-version }}-${{ github.event.inputs.version }}.tar.gz venicercon-node-${{ matrix.node-version }}.tar.gz
       - name: upload release asset
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
@@ -113,10 +114,14 @@ jobs:
           asset_name: venicercon-node-${{ matrix.node-version }}-${{ github.event.inputs.version }}.tar.gz
           asset_content_type: application/tar+gzip
       - name: upload node14 version to allianceapps s3
-        uses: shallwefootball/s3-upload-action@master
-        with:
+        shell: bash
+        env:
           aws_key_id: ${{ secrets.AWS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: ${{ secrets.AWS_BUCKET }}
-          source_dir: venicercon-node-${{ matrix.node-version }}-${{ github.event.inputs.version }}.tar.gz
-          destination_dir: venicercon-node-${{ matrix.node-version }}.tar.gz
+          aws_s3_bucket: ${{ secrets.AWS_BUCKET }}
+        run: |
+          sudo apt-get update && sudo apt-get -y install awscli
+          aws configure set aws_access_key_id $aws_key_id
+          aws configure set aws_secret_access_key $aws_secret_access_key 
+          aws configure set default.region eu-west-1
+          aws s3 venicercon-node-${{ matrix.node-version }}.tar.gz s3://$aws_s3_bucket/
