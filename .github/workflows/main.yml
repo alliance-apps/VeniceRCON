@@ -23,8 +23,8 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.version }}
           release_name: Release ${{ github.event.inputs.version }}
-          draft: true
-          prerelease: false
+          draft: false
+          prerelease: true
       - shell: bash
         run: |
           echo "${{ steps.create_release.outputs.upload_url }}" > url.txt
