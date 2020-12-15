@@ -102,7 +102,7 @@ jobs:
       - name: pack project
         run: |
           tar -czvf venicercon-node-${{ matrix.node-version }}-${{ github.event.inputs.version }}.tar.gz venicercon-${{ github.event.inputs.version }}
-          cp venicercon-node-${{ matrix.node-version }}-${{ github.event.inputs.version }}.tar.gz venicercon-node-${{ matrix.node-version }}.tar.gz
+          cp venicercon-node-${{ matrix.node-version }}-${{ github.event.inputs.version }}.tar.gz venicercon-node-${{ matrix.node-version }}-latest.tar.gz
       - name: upload release asset
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
@@ -124,4 +124,4 @@ jobs:
           aws configure set aws_access_key_id $aws_key_id
           aws configure set aws_secret_access_key $aws_secret_access_key 
           aws configure set default.region eu-west-1
-          aws s3 cp venicercon-node-${{ matrix.node-version }}.tar.gz s3://$aws_s3_bucket/
+          aws s3 cp venicercon-node-${{ matrix.node-version }}-latest.tar.gz s3://$aws_s3_bucket/ --acl public-read
