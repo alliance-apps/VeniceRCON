@@ -36,9 +36,6 @@ jobs:
   build-frontend:
     name: build frontend
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - name: checkout code
         uses: actions/checkout@v2
@@ -52,13 +49,14 @@ jobs:
         run: npm ci
       - name: build release
         run: npm run build
+      - uses: actions/upload-artifact@v2
+        with:
+          name: frontend
+          path: dist/
   build-backend:
     name: build backend
     runs-on: ubuntu-latest
     needs: [release, build-frontend]
-    defaults:
-      run:
-        working-directory: backend
     strategy:
       matrix:
         node-version: [12, 13, 14, 15]
@@ -95,14 +93,7 @@ jobs:
           mkdir venicercon-${{ github.event.inputs.version }}
           cp -r -t venicercon-${{ github.event.inputs.version }} public node_modules lib package*.json README.md config.default.yaml ecosystem.config.js
           find ./venicercon-${{ github.event.inputs.version }} -name "*.js.map" -type f -delete
-          tar -czvf venicercon-node-${{ matrix.node-version }}-${{ github.event.inputs.version }}.tar.gz venicercon-${{ github.event.inputs.version }}
-      - name: upload release asset
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v2
         with:
-          upload_url: ${{ steps.release.outputs.release_url }}
-          asset_path: ./venicercon-node-${{ matrix.node-version }}-${{ github.event.inputs.version }}.tar.gz
-          asset_name: venicercon-node-${{ matrix.node-version }}-${{ github.event.inputs.version }}.tar.gz
-          asset_content_type: application/tar+gzip
+          name: backend-${{ matrix.node-version }}
+          path: venicercon-${{ github.event.inputs.version }}/
