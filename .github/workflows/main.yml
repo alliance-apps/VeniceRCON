@@ -108,8 +108,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.release.outputs.release_url }}
-          asset_path: ./venicercon.tar.gz
-          asset_name: venicercon.tar.gz
+          asset_path: ./venicercon-${{ github.event.inputs.version }}.tar.gz
+          asset_name: venicercon-${{ github.event.inputs.version }}.tar.gz
           asset_content_type: application/tar+gzip
       - name: upload version to allianceapps s3
         shell: bash
