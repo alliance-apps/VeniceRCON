@@ -60,7 +60,7 @@ jobs:
     needs: [release, build-frontend]
     strategy:
       matrix:
-        node-version: [12, 13, 14, 15]
+        node-version: [14]
     steps:
       - name: checkout code
         uses: actions/checkout@v2
@@ -85,14 +85,12 @@ jobs:
         run: npm ci
       - name: build release
         run: npm run build
-      - name: cleanup node_modules
+      - name: remove node_modules
         run: rm -R node_modules
-      - name: install production dependencies
-        run: npm install --only=prod
       - name: clean and move to packing dir
         run: |
           mkdir venicercon-${{ github.event.inputs.version }}
-          cp -r -t venicercon-${{ github.event.inputs.version }} public node_modules lib package*.json README.md config.default.yaml ecosystem.config.js
+          cp -r -t venicercon-${{ github.event.inputs.version }} public lib package*.json README.md config.default.yaml ecosystem.config.js
           find ./venicercon-${{ github.event.inputs.version }} -name "*.js.map" -type f -delete
       - name: download frontend
         uses: actions/download-artifact@v2
@@ -101,8 +99,8 @@ jobs:
           path: venicercon-${{ github.event.inputs.version }}/public
       - name: pack project
         run: |
-          tar -czvf venicercon-node-${{ matrix.node-version }}-${{ github.event.inputs.version }}.tar.gz venicercon-${{ github.event.inputs.version }}
-          cp venicercon-node-${{ matrix.node-version }}-${{ github.event.inputs.version }}.tar.gz venicercon-node-${{ matrix.node-version }}-latest.tar.gz
+          tar -czvf venicercon-${{ github.event.inputs.version }}.tar.gz venicercon-${{ github.event.inputs.version }}
+          cp venicercon-${{ github.event.inputs.version }}.tar.gz venicercon-latest.tar.gz
       - name: upload release asset
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
@@ -110,10 +108,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.release.outputs.release_url }}
-          asset_path: ./venicercon-node-${{ matrix.node-version }}-${{ github.event.inputs.version }}.tar.gz
-          asset_name: venicercon-node-${{ matrix.node-version }}-${{ github.event.inputs.version }}.tar.gz
+          asset_path: ./venicercon.tar.gz
+          asset_name: venicercon.tar.gz
           asset_content_type: application/tar+gzip
-      - name: upload node14 version to allianceapps s3
+      - name: upload version to allianceapps s3
         shell: bash
         env:
           aws_key_id: ${{ secrets.AWS_KEY_ID }}
@@ -124,4 +122,4 @@ jobs:
           aws configure set aws_access_key_id $aws_key_id
           aws configure set aws_secret_access_key $aws_secret_access_key 
           aws configure set default.region eu-west-1
-          aws s3 cp venicercon-node-${{ matrix.node-version }}-latest.tar.gz s3://$aws_s3_bucket/ --acl public-read
+          aws s3 cp venicercon-latest.tar.gz s3://$aws_s3_bucket/ --acl public-read
