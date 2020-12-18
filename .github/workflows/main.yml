@@ -122,4 +122,4 @@ jobs:
           aws configure set aws_access_key_id $aws_key_id
           aws configure set aws_secret_access_key $aws_secret_access_key 
           aws configure set default.region eu-west-1
-          aws s3 cp venicercon-latest.tar.gz s3://$aws_s3_bucket/ --acl public-read
+          aws s3 cp venicercon-${{ github.event.inputs.version }}.tar.gz s3://$aws_s3_bucket/ --acl public-read
