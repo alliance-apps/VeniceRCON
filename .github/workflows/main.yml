@@ -89,18 +89,18 @@ jobs:
         run: rm -R node_modules
       - name: clean and move to packing dir
         run: |
-          mkdir venicercon-${{ github.event.inputs.version }}
-          cp -r -t venicercon-${{ github.event.inputs.version }} public lib package*.json README.md config.default.yaml ecosystem.config.js
-          find ./venicercon-${{ github.event.inputs.version }} -name "*.js.map" -type f -delete
+          mkdir venicercon
+          cp -r -t venicercon public lib package*.json README.md config.default.yaml ecosystem.config.js
+          find ./venicercon -name "*.js.map" -type f -delete
       - name: download frontend
         uses: actions/download-artifact@v2
         with:
           name: frontend
-          path: venicercon-${{ github.event.inputs.version }}/public
+          path: venicercon/public
       - name: pack project
         run: |
-          tar -czvf venicercon-${{ github.event.inputs.version }}.tar.gz venicercon-${{ github.event.inputs.version }}
-          cp venicercon-${{ github.event.inputs.version }}.tar.gz venicercon-latest.tar.gz
+          tar -czvf venicercon.tar.gz venicercon
+          cp venicercon.tar.gz venicercon-latest.tar.gz
       - name: upload release asset
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
@@ -108,8 +108,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.release.outputs.release_url }}
-          asset_path: ./venicercon-${{ github.event.inputs.version }}.tar.gz
-          asset_name: venicercon-${{ github.event.inputs.version }}.tar.gz
+          asset_path: ./venicercon.tar.gz
+          asset_name: venicercon.tar.gz
           asset_content_type: application/tar+gzip
       - name: upload version to allianceapps s3
         shell: bash
