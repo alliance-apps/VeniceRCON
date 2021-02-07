@@ -90,7 +90,7 @@ jobs:
       - name: clean and move to packing dir
         run: |
           mkdir venicercon
-          cp -r -t venicercon public lib package*.json README.md config.default.yaml ecosystem.config.js
+          cp -r -t venicercon public lib package*.json README.md config.default.yaml
           find ./venicercon -name "*.js.map" -type f -delete
       - name: download frontend
         uses: actions/download-artifact@v2
